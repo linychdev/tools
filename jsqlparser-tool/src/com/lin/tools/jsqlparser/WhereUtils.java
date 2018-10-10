@@ -6,10 +6,6 @@
  */
 package com.lin.tools.jsqlparser;
 
-import java.util.logging.Logger;
-
-import org.apache.commons.lang.math.NumberUtils;
-
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
@@ -19,6 +15,10 @@ import net.sf.jsqlparser.statement.select.SelectBody;
 import net.sf.jsqlparser.statement.select.SetOperationList;
 import net.sf.jsqlparser.statement.select.WithItem;
 
+import org.slf4j.Logger;
+
+import com.lin.tools.log.LogUtils;
+
 /**
  * WhereUtils
  * @author linych
@@ -26,12 +26,12 @@ import net.sf.jsqlparser.statement.select.WithItem;
  *
  */
 public class WhereUtils {
+    private static final Logger LOG = LogUtils.getLogger();
     private WhereUtils(){
         throw new IllegalStateException("Utility class");
     }
     
     public static Expression getWhere(String sql){
-        
         Select select;
         Expression where = null;
         try {
@@ -39,16 +39,16 @@ public class WhereUtils {
             PlainSelect plainSelect = (PlainSelect) select.getSelectBody();
             where = plainSelect.getWhere();
         } catch (JSQLParserException e) {
-            Logger.("Parsing sql exceptions...", e);
+            LOG.error("Parsing sql exceptions...", e);
         }
         return where;
     }
     
     public static Expression getWhere(SelectBody selectBody){
-        
+        Expression where = null;
         //普通的select
         if(selectBody instanceof PlainSelect){
-            
+            where = ((PlainSelect) selectBody).getWhere();
         }
         
         //whith语句
