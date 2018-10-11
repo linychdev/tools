@@ -1,13 +1,10 @@
-/*
- * @(#)WhereUtils.java 2018年10月10日下午5:17:32
- * jsqlparser-tool
- * Copyright 2018 Thuisoft, Inc. All rights reserved.
- * THUNISOFT PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 package com.lin.tools.jsqlparser;
 
 import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
+import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
@@ -33,15 +30,13 @@ public class WhereUtils {
     
     public static Expression getWhere(String sql){
         Select select;
-        Expression where = null;
         try {
             select = (Select) CCJSqlParserUtil.parse(sql);
-            PlainSelect plainSelect = (PlainSelect) select.getSelectBody();
-            where = plainSelect.getWhere();
+            return getWhere(select.getSelectBody());
         } catch (JSQLParserException e) {
             LOG.error("Parsing sql exceptions...", e);
+            return null;
         }
-        return where;
     }
     
     public static Expression getWhere(SelectBody selectBody){
@@ -53,14 +48,45 @@ public class WhereUtils {
         
         //whith语句
         if(selectBody instanceof WithItem){
-            
+            LOG.info("selectBody instanceof WithItem, temporary does not support:{}", selectBody);
         }
         
         //intersect,except,minus,union查询
         if(selectBody instanceof SetOperationList){
-            
+            LOG.info("selectBody instanceof SetOperationList, temporary does not support:{}", selectBody);
         }
-        
-        return null;
+        return where;
+    }
+    
+    public static Expression addFilter(String sql, Expression expression, String stringExpression, boolean isnot){
+        Expression where = getWhere(sql);
+        return addFilter(where, expression, stringExpression, isnot);
+    }
+
+    public static Expression addFilter(String sql, Expression expression, String stringExpression){
+        Expression where = getWhere(sql);
+        return addFilter(where, expression, stringExpression, false);
+    }
+    
+    public static Expression addFilter(Expression where, Expression expression, String stringExpression){
+        return addFilter(where, expression, stringExpression, false);
+    }
+
+    public static Expression addFilter(Expression where, Expression expression, String stringExpression, boolean isnot){
+        BinaryExpression binaryExpression = null;
+        if(stringExpression.equalsIgnoreCase("and")){
+            binaryExpression = new AndExpression(where, expression);
+            if(isnot){
+                binaryExpression.setNot();
+            }
+        }
+
+        if(stringExpression.equalsIgnoreCase("or")){
+            binaryExpression = new OrExpression(where, expression);
+            if(isnot){
+                binaryExpression.setNot();
+            }
+        }
+        return binaryExpression == null ? where : binaryExpression;
     }
 }
