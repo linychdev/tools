@@ -1,9 +1,3 @@
-/*
- * @(#)Test.java 2018年10月11日下午1:42:01
- * jsqlparser-tool
- * Copyright 2018 Thuisoft, Inc. All rights reserved.
- * THUNISOFT PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 package com.lin.tools.test;
 
 import com.lin.tools.jsqlparser.WhereUtils;
@@ -26,7 +20,7 @@ import net.sf.jsqlparser.statement.select.Select;
  */
 public class Test {
     public static void main(String[] args) throws JSQLParserException {
-        String sql = "select * from db_rsyw.t_fyrs_flzw where c_bh_ry in ('123')";
+        String sql = "select count(*) from db_rsyw.t_fyrs_flzw where c_bh_ry in ('123') limit ? offset ?";
         Select select = (Select) CCJSqlParserUtil.parse(sql);
         PlainSelect plainSelect = (PlainSelect) select.getSelectBody();
         Expression where = plainSelect.getWhere();
