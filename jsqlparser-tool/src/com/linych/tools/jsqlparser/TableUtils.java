@@ -1,4 +1,4 @@
-package com.lin.tools.jsqlparser;
+package com.linych.tools.jsqlparser;
 
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.schema.Table;

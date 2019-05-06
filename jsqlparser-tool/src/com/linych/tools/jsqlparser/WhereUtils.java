@@ -1,4 +1,4 @@
-package com.lin.tools.jsqlparser;
+package com.linych.tools.jsqlparser;
 
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.BinaryExpression;
@@ -14,7 +14,8 @@ import net.sf.jsqlparser.statement.select.WithItem;
 
 import org.slf4j.Logger;
 
-import com.lin.tools.log.LogUtils;
+import com.linych.tools.common.LogUtils;
+import com.linych.tools.jsqlparser.common.Operator;
 
 /**
  * WhereUtils
@@ -58,30 +59,30 @@ public class WhereUtils {
         return where;
     }
     
-    public static Expression addFilter(String sql, Expression expression, String stringExpression, boolean isnot){
+    public static Expression addFilter(String sql, Expression expression, int operator, boolean isnot){
         Expression where = getWhere(sql);
-        return addFilter(where, expression, stringExpression, isnot);
+        return addFilter(where, expression, operator, isnot);
     }
 
-    public static Expression addFilter(String sql, Expression expression, String stringExpression){
+    public static Expression addFilter(String sql, Expression expression, int operator){
         Expression where = getWhere(sql);
-        return addFilter(where, expression, stringExpression, false);
+        return addFilter(where, expression, operator, false);
     }
     
-    public static Expression addFilter(Expression where, Expression expression, String stringExpression){
-        return addFilter(where, expression, stringExpression, false);
+    public static Expression addFilter(Expression where, Expression expression, int operator){
+        return addFilter(where, expression, operator, false);
     }
 
-    public static Expression addFilter(Expression where, Expression expression, String stringExpression, boolean isnot){
+    public static Expression addFilter(Expression where, Expression expression, int operator, boolean isnot){
         BinaryExpression binaryExpression = null;
-        if(stringExpression.equalsIgnoreCase("and")){
+        if(operator == Operator.AND){
             binaryExpression = new AndExpression(where, expression);
             if(isnot){
                 binaryExpression.setNot();
             }
         }
 
-        if(stringExpression.equalsIgnoreCase("or")){
+        if(operator == Operator.OR){
             binaryExpression = new OrExpression(where, expression);
             if(isnot){
                 binaryExpression.setNot();
