@@ -74,6 +74,9 @@ public class WhereUtils {
     }
 
     public static Expression addFilter(Expression where, Expression expression, int operator, boolean isnot){
+        if(where == null){
+            return expression;
+        }
         BinaryExpression binaryExpression = null;
         if(operator == Operator.AND){
             binaryExpression = new AndExpression(where, expression);
